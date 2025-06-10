@@ -1,14 +1,14 @@
 require 'httpclient'
 
-module RedmineSlack
+module RedmineReminder
 class Listener < Redmine::Hook::Listener
-	def redmine_slack_issues_new_after_save(context={})
+	def redmine_reminder_issues_new_after_save(context={})
 		issue = context[:issue]
 
 		channel = channel_for_project issue.project
 		url = url_for_project issue.project
 
-		return unless channel and url
+		return unless (channel and url) or google_chat_webhook_url_for_project(issue.project)
 		return if issue.is_private?
 
 		msg = "[#{escape issue.project}] #{escape issue.author} created <#{object_url issue}|#{escape issue}>#{mentions issue.description}"
@@ -33,19 +33,19 @@ class Listener < Redmine::Hook::Listener
 			:title => I18n.t("field_watcher"),
 			:value => escape(issue.watcher_users.join(', ')),
 			:short => true
-		} if Setting.plugin_redmine_slack['display_watchers'] == 'yes'
+		} if Setting.plugin_redmine_reminder['display_watchers'] == 'yes'
 
-		speak msg, channel, attachment, url
+		speak msg, channel, attachment, url, issue.project
 	end
 
-	def redmine_slack_issues_edit_after_save(context={})
+	def redmine_reminder_issues_edit_after_save(context={})
 		issue = context[:issue]
 		journal = context[:journal]
 
 		channel = channel_for_project issue.project
 		url = url_for_project issue.project
 
-		return unless channel and url and Setting.plugin_redmine_slack['post_updates'] == '1'
+		return unless (channel and url and Setting.plugin_redmine_reminder['post_updates'] == '1') or google_chat_webhook_url_for_project(issue.project)
 		return if issue.is_private?
 		return if journal.private_notes?
 
@@ -55,7 +55,7 @@ class Listener < Redmine::Hook::Listener
 		attachment[:text] = escape journal.notes if journal.notes
 		attachment[:fields] = journal.details.map { |d| detail_to_field d }
 
-		speak msg, channel, attachment, url
+		speak msg, channel, attachment, url, issue.project
 	end
 
 	def model_changeset_scan_commit_for_issue_ids_pre_issue_update(context={})
@@ -66,7 +66,7 @@ class Listener < Redmine::Hook::Listener
 		channel = channel_for_project issue.project
 		url = url_for_project issue.project
 
-		return unless channel and url and issue.save
+		return unless (channel and url and issue.save) or google_chat_webhook_url_for_project(issue.project)
 		return if issue.is_private?
 
 		msg = "[#{escape issue.project}] #{escape journal.user.to_s} updated <#{object_url issue}|#{escape issue}>"
@@ -102,11 +102,11 @@ class Listener < Redmine::Hook::Listener
 		attachment[:text] = ll(Setting.default_language, :text_status_changed_by_changeset, "<#{revision_url}|#{escape changeset.comments}>")
 		attachment[:fields] = journal.details.map { |d| detail_to_field d }
 
-		speak msg, channel, attachment, url
+		speak msg, channel, attachment, url, issue.project
 	end
 
 	def controller_wiki_edit_after_save(context = { })
-		return unless Setting.plugin_redmine_slack['post_wiki_updates'] == '1'
+		return unless Setting.plugin_redmine_reminder['post_wiki_updates'] == '1'
 
 		project = context[:project]
 		page = context[:page]
@@ -122,7 +122,7 @@ class Listener < Redmine::Hook::Listener
 		channel = channel_for_project project
 		url = url_for_project project
 		
-		return unless channel and url
+		return unless (channel and url) or google_chat_webhook_url_for_project(project)
 
 		attachment = nil
 		if not page.content.comments.empty?
@@ -130,44 +130,86 @@ class Listener < Redmine::Hook::Listener
 			attachment[:text] = "#{escape page.content.comments}"
 		end
 
-		speak comment, channel, attachment, url
+		speak comment, channel, attachment, url, project
 	end
 
-	def speak(msg, channel, attachment=nil, url=nil)
-		url = Setting.plugin_redmine_slack['slack_url'] if not url
-		username = Setting.plugin_redmine_slack['username']
-		icon = Setting.plugin_redmine_slack['icon']
+	def speak(msg, channel, attachment=nil, url=nil, project=nil)
+		# Slack
+		slack_url = url || Setting.plugin_redmine_reminder['slack_url']
+		if channel and slack_url and not slack_url.empty?
+			username = Setting.plugin_redmine_reminder['username']
+			icon = Setting.plugin_redmine_reminder['icon']
 
-		params = {
-			:text => msg,
-			:link_names => 1,
-		}
+			params = {
+				:text => msg,
+				:link_names => 1,
+			}
 
-		params[:username] = username if username
-		params[:channel] = channel if channel
+			params[:username] = username if username
+			params[:channel] = channel if channel
 
-		params[:attachments] = [attachment] if attachment
+			params[:attachments] = [attachment] if attachment
 
-		if icon and not icon.empty?
-			if icon.start_with? ':'
-				params[:icon_emoji] = icon
-			else
-				params[:icon_url] = icon
+			if icon && !icon.empty?
+				if icon.start_with? ':'
+					params[:icon_emoji] = icon
+				else
+					params[:icon_url] = icon
+				end
+			end
+
+			begin
+				client = HTTPClient.new
+				client.ssl_config.cert_store.set_default_paths
+				client.ssl_config.ssl_version = :auto
+				client.post_async slack_url, {:payload => params.to_json}
+			rescue Exception => e
+				Rails.logger.warn("cannot connect to #{slack_url}")
+				Rails.logger.warn(e)
 			end
 		end
 
+		# Google Chat
+		gchat_url = google_chat_webhook_url_for_project(project)
+		if gchat_url && !gchat_url.empty?
+			text = format_for_google_chat(msg, attachment)
+			post_to_google_chat(text, gchat_url)
+		end
+	end
+
+private
+	def post_to_google_chat(text, url)
 		begin
 			client = HTTPClient.new
 			client.ssl_config.cert_store.set_default_paths
 			client.ssl_config.ssl_version = :auto
-			client.post_async url, {:payload => params.to_json}
+			client.post_async url, {'text': text}.to_json, {'Content-Type' => 'application/json'}
 		rescue Exception => e
 			Rails.logger.warn("cannot connect to #{url}")
 			Rails.logger.warn(e)
 		end
 	end
 
-private
+	def format_for_google_chat(msg, attachment)
+		# Unescape from Slack's format to get a clean message
+		text = msg.to_s.gsub('&lt;', '<').gsub('&gt;', '>').gsub('&amp;', '&')
+		
+		# Convert slack links <http...|text> to Google Chat links <http...|text>
+		# This format is coincidentally similar.
+		
+		if attachment
+			if attachment[:text]
+				text << "\n" + attachment[:text].to_s.gsub('&lt;', '<').gsub('&gt;', '>').gsub('&amp;', '&')
+			end
+			if attachment[:fields]
+				fields_text = attachment[:fields].map { |f| "*#{f[:title]}*: #{f[:value]}" }.join("\n")
+				text << "\n" + fields_text
+			end
+		end
+		
+		text
+	end
+
 	def escape(msg)
 		msg.to_s.gsub("&", "&amp;").gsub("<", "&lt;").gsub(">", "&gt;")
 	end
@@ -197,7 +239,7 @@ private
 		return [
 			(proj.custom_value_for(cf).value rescue nil),
 			(url_for_project proj.parent),
-			Setting.plugin_redmine_slack['slack_url'],
+			Setting.plugin_redmine_reminder['slack_url'],
 		].find{|v| v.present?}
 	end
 
@@ -209,7 +251,7 @@ private
 		val = [
 			(proj.custom_value_for(cf).value rescue nil),
 			(channel_for_project proj.parent),
-			Setting.plugin_redmine_slack['channel'],
+			Setting.plugin_redmine_reminder['channel'],
 		].find{|v| v.present?}
 
 		# Channel name '-' is reserved for NOT notifying
@@ -293,6 +335,18 @@ private
 		# slack usernames may only contain lowercase letters, numbers,
 		# dashes and underscores and must start with a letter or number.
 		text.scan(/@[a-z0-9][a-z0-9_\-\.]*/).uniq
+	end
+
+	def google_chat_webhook_url_for_project(proj)
+		return nil if proj.blank?
+		
+		cf = ProjectCustomField.find_by_name("Google Chat Webhook")
+
+		return [
+			(proj.custom_value_for(cf).value rescue nil),
+			(google_chat_webhook_url_for_project proj.parent),
+			Setting.plugin_redmine_reminder['google_chat_webhook_url'],
+		].find{|v| v.present?}
 	end
 end
 end
