@@ -1,0 +1,121 @@
+<%= error_messages_for @reminder %>
+
+<div class="box tabular">
+  <p>
+    <%= f.label :content, 'Nội dung *' %>
+    <%= f.text_area :content, :rows => 5, :cols => 60, :required => true %>
+    <em class="info">Hỗ trợ định dạng Markdown</em>
+  </p>
+
+  <p>
+    <%= f.label :send_date, 'Ngày gửi *' %>
+    <%= f.date_field :send_date, :required => true %>
+  </p>
+
+  <p>
+    <%= f.label :send_time, 'Giờ gửi *' %>
+    <% 
+      # Display time in user's timezone
+      time_value = if @reminder.send_time.present?
+        user_tz = @reminder.send(:get_user_timezone)
+        @reminder.send_time.in_time_zone(user_tz).strftime('%H:%M')
+      else
+        nil
+      end
+    %>
+    <%= f.time_field :send_time, :required => true, :value => time_value %>
+  </p>
+
+  <p>
+    <%= f.label :issue_id, 'Issue liên quan' %>
+    <% if @project.issues.any? %>
+      <%= f.collection_select :issue_id, @project.issues.order(:id), :id, 
+                             :to_s, { include_blank: '-- Chọn issue --' },
+                             { class: 'issue-select' } %>
+    <% else %>
+      <em>Không có issue nào trong dự án này</em>
+    <% end %>
+  </p>
+
+  <fieldset class="box">
+    <legend>Cài đặt lặp lại</legend>
+    
+    <p>
+      <%= f.check_box :is_recurring %>
+      <%= f.label :is_recurring, 'Lặp lại reminder' %>
+    </p>
+
+    <div id="recurring-options" style="<%= 'display: none;' unless @reminder.is_recurring? %>">
+      <p>
+        <%= f.label :recurring_type, 'Loại lặp lại' %>
+        <%= f.select :recurring_type, 
+                     options_for_select(Reminder::RECURRING_TYPES.map{|k,v| [v,k]}, @reminder.recurring_type),
+                     { include_blank: '-- Chọn loại --' },
+                     { id: 'recurring_type_select' } %>
+      </p>
+
+      <div id="custom-days-options" style="<%= 'display: none;' unless @reminder.recurring_type == 'custom' %>">
+        <p>
+          <%= f.label :custom_days, 'Chọn ngày trong tuần' %>
+          <% selected_days = @reminder.custom_days ? @reminder.custom_days.split(',') : [] %>
+          <% Reminder::WEEKDAYS.each do |value, label| %>
+            <label class="inline">
+              <%= check_box_tag "custom_days[]", value, selected_days.include?(value),
+                                { class: 'custom-day-checkbox' } %>
+              <%= label %>
+            </label>
+          <% end %>
+          <%= hidden_field_tag 'reminder[custom_days]', '', id: 'hidden_custom_days' %>
+        </p>
+      </div>
+    </div>
+  </fieldset>
+
+  <p>
+    <%= f.check_box :active, checked: @reminder.active? %>
+    <%= f.label :active, 'Kích hoạt reminder' %>
+  </p>
+</div>
+
+<%= content_for :header_tags do %>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const isRecurringCheckbox = document.getElementById('reminder_is_recurring');
+      const recurringOptions = document.getElementById('recurring-options');
+      const recurringTypeSelect = document.getElementById('recurring_type_select');
+      const customDaysOptions = document.getElementById('custom-days-options');
+      const customDayCheckboxes = document.querySelectorAll('.custom-day-checkbox');
+      const hiddenCustomDays = document.getElementById('hidden_custom_days');
+
+      // Toggle recurring options
+      isRecurringCheckbox.addEventListener('change', function() {
+        recurringOptions.style.display = this.checked ? 'block' : 'none';
+      });
+
+      // Toggle custom days options
+      recurringTypeSelect.addEventListener('change', function() {
+        customDaysOptions.style.display = (this.value === 'custom') ? 'block' : 'none';
+      });
+
+      // Handle custom days selection
+      customDayCheckboxes.forEach(function(checkbox) {
+        checkbox.addEventListener('change', updateCustomDays);
+      });
+
+      function updateCustomDays() {
+        const checkedDays = Array.from(customDayCheckboxes)
+          .filter(cb => cb.checked)
+          .map(cb => cb.value);
+        hiddenCustomDays.value = checkedDays.join(',');
+      }
+
+      // Initialize custom days on page load
+      updateCustomDays();
+    });
+  </script>
+  <style>
+    .inline { display: inline-block; margin-right: 15px; }
+    #recurring-options { margin-left: 20px; }
+    #custom-days-options { margin-left: 20px; background: #f8f8f8; padding: 10px; border-radius: 3px; }
+  </style>
+<% end %> 

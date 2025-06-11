@@ -1,0 +1,82 @@
+<h2>Quản lý Reminder</h2>
+
+<div class="contextual">
+  <%= link_to 'Tạo Reminder mới', new_project_reminder_path(@project), 
+              :class => 'icon icon-add' %>
+</div>
+
+<% if @reminders.any? %>
+<table class="list reminders">
+  <thead>
+    <tr>
+      <th>Nội dung</th>
+      <th>Ngày gửi</th>
+      <th>Giờ gửi</th>
+      <th>Lặp lại</th>
+      <th>Issue liên quan</th>
+      <th>Người tạo</th>
+      <th>Trạng thái</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @reminders.each do |reminder| %>
+    <tr class="<%= cycle('odd', 'even') %>">
+      <td class="subject">
+        <%= link_to truncate(reminder.content, length: 50), 
+                    project_reminder_path(@project, reminder) %>
+      </td>
+      <td class="date">
+        <%= reminder.formatted_send_date %>
+      </td>
+      <td class="time">
+        <%= reminder.formatted_send_time %>
+      </td>
+      <td class="recurring">
+        <%= reminder.recurring_type_text %>
+        <% if reminder.recurring_type == 'custom' %>
+          <br><small>(<%= reminder.custom_days_text %>)</small>
+        <% end %>
+      </td>
+      <td class="issue">
+        <% if reminder.issue %>
+          <%= link_to "##{reminder.issue.id} #{reminder.issue.subject}", 
+                      issue_path(reminder.issue) %>
+        <% else %>
+          <em>Không có</em>
+        <% end %>
+      </td>
+      <td class="author">
+        <%= link_to_user reminder.created_by %>
+      </td>
+      <td class="status">
+        <% if reminder.active? %>
+          <span class="status-active">Hoạt động</span>
+        <% else %>
+          <span class="status-inactive">Tạm dừng</span>
+        <% end %>
+      </td>
+      <td class="buttons">
+        <%= link_to 'Sửa', edit_project_reminder_path(@project, reminder),
+                    :class => 'icon icon-edit' %>
+        <%= link_to 'Xóa', project_reminder_path(@project, reminder),
+                    :method => :delete,
+                    :data => {:confirm => 'Bạn có chắc muốn xóa reminder này?'},
+                    :class => 'icon icon-del' %>
+      </td>
+    </tr>
+    <% end %>
+  </tbody>
+</table>
+<% else %>
+<p class="nodata">Chưa có reminder nào được tạo.</p>
+<% end %>
+
+<%= content_for :header_tags do %>
+  <style>
+    .status-active { color: #169f85; font-weight: bold; }
+    .status-inactive { color: #999; }
+    table.reminders td.subject { font-weight: bold; }
+    table.reminders td.date, table.reminders td.time { white-space: nowrap; }
+  </style>
+<% end %> 

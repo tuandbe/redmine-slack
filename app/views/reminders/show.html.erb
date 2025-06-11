@@ -1,0 +1,90 @@
+<h2>Chi tiết Reminder</h2>
+
+<div class="contextual">
+  <%= link_to 'Sửa', edit_project_reminder_path(@project, @reminder),
+              :class => 'icon icon-edit' %>
+  <%= link_to 'Xóa', project_reminder_path(@project, @reminder),
+              :method => :delete,
+              :data => {:confirm => 'Bạn có chắc muốn xóa reminder này?'},
+              :class => 'icon icon-del' %>
+</div>
+
+<div class="box tabular">
+  <p>
+    <label>Nội dung:</label>
+    <div class="wiki">
+      <%= textilizable @reminder.content %>
+    </div>
+  </p>
+
+  <p>
+    <label>Ngày gửi:</label>
+    <%= @reminder.formatted_send_date %>
+  </p>
+
+  <p>
+    <label>Giờ gửi:</label>
+    <%= @reminder.formatted_send_time %>
+  </p>
+
+  <p>
+    <label>Lặp lại:</label>
+    <%= @reminder.recurring_type_text %>
+    <% if @reminder.recurring_type == 'custom' %>
+      <br><small>Các ngày: <%= @reminder.custom_days_text %></small>
+    <% end %>
+  </p>
+
+  <% if @reminder.issue %>
+  <p>
+    <label>Issue liên quan:</label>
+    <%= link_to "##{@reminder.issue.id} #{@reminder.issue.subject}", 
+                issue_path(@reminder.issue) %>
+  </p>
+  <% end %>
+
+  <p>
+    <label>Người tạo:</label>
+    <%= link_to_user @reminder.created_by %>
+  </p>
+
+  <p>
+    <label>Ngày tạo:</label>
+    <%= format_time @reminder.created_at %>
+  </p>
+
+  <% if @reminder.updated_at != @reminder.created_at %>
+  <p>
+    <label>Cập nhật lần cuối:</label>
+    <%= format_time @reminder.updated_at %>
+  </p>
+  <% end %>
+
+  <p>
+    <label>Trạng thái:</label>
+    <% if @reminder.active? %>
+      <span class="status-active">Hoạt động</span>
+    <% else %>
+      <span class="status-inactive">Tạm dừng</span>
+    <% end %>
+  </p>
+
+  <% if @reminder.is_recurring? && @reminder.active? %>
+  <p>
+    <label>Lần gửi tiếp theo:</label>
+    <% next_date = @reminder.next_send_date %>
+    <% if next_date %>
+      <%= next_date.strftime('%d/%m/%Y') %> lúc <%= @reminder.formatted_send_time %>
+    <% else %>
+      <em>Không xác định được</em>
+    <% end %>
+  </p>
+  <% end %>
+</div>
+
+<%= content_for :header_tags do %>
+  <style>
+    .status-active { color: #169f85; font-weight: bold; }
+    .status-inactive { color: #999; }
+  </style>
+<% end %> 

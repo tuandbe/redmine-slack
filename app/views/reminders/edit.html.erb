@@ -1,0 +1,10 @@
+<h2>Sửa Reminder</h2>
+
+<%= form_with model: [@project, @reminder], local: true do |f| %>
+  <%= render partial: 'form', locals: { f: f } %>
+  
+  <p>
+    <%= submit_tag 'Cập nhật', class: 'button-positive' %>
+    <%= link_to 'Hủy', project_reminders_path(@project), class: 'button' %>
+  </p>
+<% end %> 
