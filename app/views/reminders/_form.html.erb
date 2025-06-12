@@ -1,3 +1,5 @@
+<%= javascript_include_tag 'reminder_form', plugin: 'redmine_reminder' %>
+
 <%= error_messages_for @reminder %>
 
 <div class="box tabular">
@@ -83,67 +85,4 @@
     #recurring-options { margin-left: 20px; }
     #custom-days-options { margin-left: 20px; background: #f8f8f8; padding: 10px; border-radius: 3px; }
   </style>
-<% end %>
-
-<%= javascript_tag do %>
-  $(document).ready(function() {
-    console.log('Reminder form script started (jQuery).');
-
-    var isRecurringCheckbox = $('.is-recurring-checkbox');
-    console.log('isRecurringCheckbox found:', isRecurringCheckbox.length > 0 ? isRecurringCheckbox[0] : 'not found');
-    
-    var recurringOptions = $('#recurring-options');
-    console.log('recurringOptions found:', recurringOptions.length > 0 ? recurringOptions[0] : 'not found');
-    
-    var recurringTypeSelect = $('#recurring_type_select');
-    var customDaysOptions = $('#custom-days-options');
-    var hiddenCustomDays = $('#hidden_custom_days');
-    var customDayCheckboxes = $('.custom-day-checkbox');
-
-    function toggleRecurringOptions() {
-      var isChecked = isRecurringCheckbox.is(':checked');
-      console.log('toggleRecurringOptions called. Checkbox checked:', isChecked);
-      if (isChecked) {
-        recurringOptions.show();
-      } else {
-        recurringOptions.hide();
-      }
-      console.log('recurringOptions display is now:', recurringOptions.css('display'));
-    }
-
-    function toggleCustomDaysOptions() {
-      if (recurringTypeSelect.val() === 'custom') {
-        customDaysOptions.show();
-      } else {
-        customDaysOptions.hide();
-      }
-    }
-
-    function updateHiddenCustomDays() {
-      var selectedDays = customDayCheckboxes.filter(':checked').map(function() {
-        return $(this).val();
-      }).get().join(',');
-      hiddenCustomDays.val(selectedDays);
-    }
-
-    if (isRecurringCheckbox.length) {
-      console.log('Adding change listener to isRecurringCheckbox.');
-      isRecurringCheckbox.on('change', toggleRecurringOptions);
-    } else {
-      console.log('isRecurringCheckbox not found, cannot add listener.');
-    }
-
-    if (recurringTypeSelect.length) {
-      recurringTypeSelect.on('change', toggleCustomDaysOptions);
-    }
-
-    if (customDayCheckboxes.length) {
-      customDayCheckboxes.on('change', updateHiddenCustomDays);
-    }
-
-    console.log('Running initial state setup.');
-    toggleRecurringOptions();
-    toggleCustomDaysOptions();
-    updateHiddenCustomDays();
-  });
 <% end %> 
