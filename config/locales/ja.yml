@@ -74,3 +74,13 @@ ja:
   label_google_chat_settings: Googleチャット設定
   label_yes: はい
   label_no: いいえ
+  
+  # Google Chat formatting help text
+  text_google_chat_formatting_supported: "Google Chat の書式をサポート: *太字*, _斜体_, ~取り消し線~, &lt;URL|リンクテキスト&gt;, および &lt;users/all&gt; や &lt;users/user@example.com&gt; のようなメンション。"
+  
+  # Google Chat Notifications
+  gchat_notification_title: "🔔 *プロジェクト「%{project_name}」からのリマインダー*"
+  gchat_notification_issue: "📋 *関連チケット:* <%{issue_url}|#%{issue_id} %{issue_subject}>"
+  gchat_notification_time: "⏰ *時間:* %{date} %{time}"
+  gchat_notification_recurring: "🔄 *繰り返し:* %{type}"
+  gchat_notification_custom_days: "   *曜日:* %{days}"

@@ -84,3 +84,13 @@ en:
   label_google_chat_settings: Google Chat Settings
   label_yes: Yes
   label_no: No
+  
+  # Google Chat formatting help text
+  text_google_chat_formatting_supported: "Supports Google Chat formatting: *bold*, _italics_, ~strikethrough~, &lt;URL|Link text&gt;, and mentions like &lt;users/all&gt; or &lt;users/user@example.com&gt;."
+  
+  # Google Chat Notifications
+  gchat_notification_title: "🔔 *Reminder from project %{project_name}*"
+  gchat_notification_issue: "📋 *Related issue:* <%{issue_url}|#%{issue_id} %{issue_subject}>"
+  gchat_notification_time: "⏰ *Time:* %{date} at %{time}"
+  gchat_notification_recurring: "🔄 *Repeat:* %{type}"
+  gchat_notification_custom_days: "   *Days:* %{days}"

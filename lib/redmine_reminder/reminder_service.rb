@@ -145,37 +145,37 @@ module RedmineReminder
     end
 
       def self.format_reminder_message(reminder)
-    # Convert Markdown to plain text for Google Chat
-    # Use simple regex to remove markdown formatting
-    content = reminder.content.gsub(/\*\*(.*?)\*\*/, '\1')  # Remove bold
-                             .gsub(/\*(.*?)\*/, '\1')       # Remove italic
-                             .gsub(/`(.*?)`/, '\1')         # Remove code
-                             .gsub(/\[(.*?)\]\(.*?\)/, '\1') # Remove links
-                             .strip
+        # Convert Redmine's markdown to Google Chat's format
+        content = reminder.content
+                          .gsub(/\*\*(.*?)\*\*/, '*\1*')      # Bold: **text** -> *text*
+                          .gsub(/_(.*?)_/, '_\1_')           # Italic: _text_ -> _text_ (no change)
+                          .gsub(/~(.*?)~/, '~\1~')           # Strikethrough: ~text~ -> ~text~ (no change)
+                          .gsub(/\[(.*?)\]\((.*?)\)/, '<\2|\1>') # Link: [text](url) -> <url|text>
+                          .strip
 
-      message_parts = []
-      message_parts << "🔔 **Reminder từ dự án #{reminder.project.name}**"
-      message_parts << ""
-      message_parts << content
-      
-      if reminder.issue
-        issue_url = generate_issue_url(reminder.issue)
+        message_parts = []
+        message_parts << I18n.t('gchat_notification_title', project_name: reminder.project.name)
         message_parts << ""
-        message_parts << "📋 **Issue liên quan:** [##{reminder.issue.id} #{reminder.issue.subject}](#{issue_url})"
-      end
-
-      message_parts << ""
-      message_parts << "⏰ Thời gian: #{reminder.formatted_send_date} lúc #{reminder.formatted_send_time}"
-      
-      if reminder.is_recurring?
-        message_parts << "🔄 Lặp lại: #{reminder.recurring_type_text}"
-        if reminder.recurring_type == 'custom'
-          message_parts << "   Các ngày: #{reminder.custom_days_text}"
+        message_parts << content
+        
+        if reminder.issue
+          issue_url = generate_issue_url(reminder.issue)
+          message_parts << ""
+          message_parts << I18n.t('gchat_notification_issue', issue_url: issue_url, issue_id: reminder.issue.id, issue_subject: reminder.issue.subject)
         end
-      end
 
-      message_parts.join("\n")
-    end
+        message_parts << ""
+        message_parts << I18n.t('gchat_notification_time', date: reminder.formatted_send_date, time: reminder.formatted_send_time)
+        
+        if reminder.is_recurring?
+          message_parts << I18n.t('gchat_notification_recurring', type: reminder.recurring_type_text)
+          if reminder.recurring_type == 'custom'
+            message_parts << I18n.t('gchat_notification_custom_days', days: reminder.custom_days_text)
+          end
+        end
+
+        message_parts.join("\n")
+      end
 
     def self.generate_issue_url(issue)
       if Setting.host_name.present?

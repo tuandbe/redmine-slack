@@ -74,3 +74,13 @@ vi:
   label_google_chat_settings: Cài đặt Google Chat
   label_yes: Có
   label_no: Không
+  
+  # Google Chat formatting help text
+  text_google_chat_formatting_supported: "Hỗ trợ định dạng Google Chat: *in đậm*, _in nghiêng_, ~gạch ngang~, &lt;URL|Văn bản liên kết&gt;, và đề cập như &lt;users/all&gt; hoặc &lt;users/user@example.com&gt;."
+  
+  # Google Chat Notifications
+  gchat_notification_title: "🔔 *Nhắc nhở từ dự án %{project_name}*"
+  gchat_notification_issue: "📋 *Issue liên quan:* <%{issue_url}|#%{issue_id} %{issue_subject}>"
+  gchat_notification_time: "⏰ *Thời gian:* %{date} lúc %{time}"
+  gchat_notification_recurring: "🔄 *Lặp lại:* %{type}"
+  gchat_notification_custom_days: "   *Các ngày:* %{days}"

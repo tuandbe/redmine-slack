@@ -6,7 +6,7 @@
   <p>
     <%= f.label :content, l(:field_content) %><span class="required"> *</span>
     <%= f.text_area :content, :rows => 5, :cols => 60, :required => true %>
-    <em class="info"><%= l(:text_markdown_formatting_supported) %></em>
+    <em class="info"><%= l(:text_google_chat_formatting_supported).html_safe %></em>
   </p>
 
   <p>
