@@ -4,18 +4,18 @@
 
 <div class="box tabular">
   <p>
-    <%= f.label :content, 'Nội dung *' %>
+    <%= f.label :content, l(:field_content) %><span class="required"> *</span>
     <%= f.text_area :content, :rows => 5, :cols => 60, :required => true %>
-    <em class="info">Hỗ trợ định dạng Markdown</em>
+    <em class="info"><%= l(:text_markdown_formatting_supported) %></em>
   </p>
 
   <p>
-    <%= f.label :send_date, 'Ngày gửi *' %>
+    <%= f.label :send_date, l(:field_send_date) %><span class="required"> *</span>
     <%= f.date_field :send_date, :required => true %>
   </p>
 
   <p>
-    <%= f.label :send_time, 'Giờ gửi *' %>
+    <%= f.label :send_time, l(:field_send_time) %><span class="required"> *</span>
     <% 
       # Display time in user's timezone
       time_value = if @reminder.send_time.present?
@@ -29,45 +29,45 @@
   </p>
 
   <p>
-    <%= f.label :issue_id, 'Issue liên quan' %>
+    <%= f.label :issue_id, l(:field_issue) %>
     <% if @project.issues.any? %>
       <%= f.collection_select :issue_id, @project.issues.order(:id), :id, 
-                             :to_s, { include_blank: '-- Chọn issue --' },
+                             :to_s, { include_blank: l(:label_select_issue_placeholder) },
                              { class: 'issue-select' } %>
     <% else %>
-      <em>Không có issue nào trong dự án này</em>
+      <em><%= l(:label_no_issues_in_project) %></em>
     <% end %>
   </p>
 
   <fieldset class="box">
-    <legend>Cài đặt lặp lại</legend>
+    <legend><%= l(:label_recurring_settings) %></legend>
     
     <p>
       <%= f.check_box :is_recurring, class: 'is-recurring-checkbox' %>
-      <%= f.label :is_recurring, 'Lặp lại reminder' %>
+      <%= f.label :is_recurring, l(:field_is_recurring) %>
     </p>
 
     <div id="recurring-options" style="<%= 'display: none;' unless @reminder.is_recurring? %>">
       <p>
-        <%= f.label :recurring_type, 'Loại lặp lại' %>
+        <%= f.label :recurring_type, l(:field_recurring_type) %>
         <%= f.select :recurring_type, 
-                     options_for_select(Reminder::RECURRING_TYPES.map{|k,v| [v,k]}, @reminder.recurring_type),
-                     { include_blank: '-- Chọn loại --' },
+                     options_for_select(Reminder.recurring_type_options, @reminder.recurring_type),
+                     { include_blank: l(:label_select_recurring_type_placeholder) },
                      { id: 'recurring_type_select' } %>
       </p>
 
       <div id="custom-days-options" style="<%= 'display: none;' unless @reminder.recurring_type == 'custom' %>">
         <p>
-          <%= f.label :custom_days, 'Chọn ngày trong tuần' %>
+          <%= f.label :custom_days, l(:field_custom_days) %>
           <% selected_days = @reminder.custom_days ? @reminder.custom_days.split(',') : [] %>
-          <% Reminder::WEEKDAYS.each do |value, label| %>
+          <% Reminder.weekday_options.each do |label, value| %>
             <label class="inline">
               <%= check_box_tag "custom_days[]", value, selected_days.include?(value),
                                 { class: 'custom-day-checkbox' } %>
               <%= label %>
             </label>
           <% end %>
-          <%= hidden_field_tag 'reminder[custom_days]', '', id: 'hidden_custom_days' %>
+          <%= hidden_field_tag 'reminder[custom_days]', @reminder.custom_days, id: 'hidden_custom_days' %>
         </p>
       </div>
     </div>
@@ -75,7 +75,7 @@
 
   <p>
     <%= f.check_box :active, checked: @reminder.active? %>
-    <%= f.label :active, 'Kích hoạt reminder' %>
+    <%= f.label :active, l(:field_active) %>
   </p>
 </div>
 

@@ -43,7 +43,7 @@ class RemindersController < ApplicationController
     end
 
     if @reminder.save
-      flash[:notice] = 'Reminder đã được tạo thành công.'
+      flash[:notice] = l(:notice_reminder_created_successfully)
       redirect_to project_reminders_path(@project)
     else
       render :new
@@ -70,7 +70,7 @@ class RemindersController < ApplicationController
     end
     
     if @reminder.update(reminder_params_with_time)
-      flash[:notice] = 'Reminder đã được cập nhật thành công.'
+      flash[:notice] = l(:notice_reminder_updated_successfully)
       redirect_to project_reminders_path(@project)
     else
       render :edit
@@ -79,7 +79,7 @@ class RemindersController < ApplicationController
 
   def destroy
     @reminder.destroy
-    flash[:notice] = 'Reminder đã được xóa thành công.'
+    flash[:notice] = l(:notice_reminder_deleted_successfully)
     redirect_to project_reminders_path(@project)
   end
 

@@ -1,0 +1,76 @@
+# Vietnamese translations for Redmine Reminder plugin
+vi:
+  permission_view_reminders: Xem nhắc nhở
+  permission_manage_reminders: Quản lý nhắc nhở
+  project_module_reminder: Nhắc nhở
+  label_reminder_plural: Nhắc nhở
+  label_reminder_new: Tạo nhắc nhở mới
+  label_reminder_edit: Sửa nhắc nhở
+  
+  field_content: Nội dung
+  field_send_date: Ngày gửi
+  field_send_time: Giờ gửi
+  field_issue: Issue liên quan
+  field_is_recurring: Lặp lại reminder
+  field_recurring_type: Loại lặp lại
+  field_custom_days: Chọn ngày trong tuần
+  field_active: Kích hoạt
+  
+  text_markdown_formatting_supported: Hỗ trợ định dạng Markdown
+  label_select_issue_placeholder: -- Chọn một issue --
+  label_no_issues_in_project: Không có issue nào trong dự án này
+  label_select_recurring_type_placeholder: -- Chọn loại --
+  
+  recurring_type_daily: Hàng ngày
+  recurring_type_weekdays: Mỗi ngày làm việc
+  recurring_type_weekly: Hàng tuần
+  recurring_type_custom: Tuỳ chỉnh
+  
+  weekday_monday: Thứ 2
+  weekday_tuesday: Thứ 3
+  weekday_wednesday: Thứ 4
+  weekday_thursday: Thứ 5
+  weekday_friday: Thứ 6
+  weekday_saturday: Thứ 7
+  weekday_sunday: Chủ nhật
+  
+  button_create_reminder: Tạo Nhắc nhở
+  button_update_reminder: Cập nhật Nhắc nhở
+  
+  label_my_reminders: Nhắc nhở của tôi
+  label_all_reminders: Tất cả nhắc nhở (cho quản trị)
+  label_status: Trạng thái
+  label_status_active: Đang hoạt động
+  label_status_inactive: Không hoạt động
+  label_next_send_date: Lần gửi tiếp theo
+  label_actions: Thao tác
+  
+  label_reminder_details: Chi tiết Nhắc nhở
+  label_created_by: Người tạo
+  label_recurring_settings: Cài đặt lặp lại
+  label_not_recurring: Không lặp lại
+  
+  notice_reminder_created_successfully: Đã tạo nhắc nhở thành công.
+  notice_reminder_updated_successfully: Đã cập nhật nhắc nhở thành công.
+  notice_reminder_deleted_successfully: Đã xóa nhắc nhở thành công.
+  
+  error_custom_days_blank: không được để trống khi chọn lặp lại tuỳ chỉnh
+  error_custom_days_invalid: chứa ngày không hợp lệ
+  
+  # Settings
+  setting_slack_url: URL Slack
+  setting_slack_channel: Kênh Slack
+  setting_slack_icon: Biểu tượng Slack
+  setting_slack_username: Tên người dùng Slack
+  setting_display_watchers: Hiển thị người theo dõi?
+  setting_post_updates: Đăng cập nhật Issue?
+  setting_post_wiki_updates: Đăng cập nhật Wiki?
+  setting_google_chat_webhook_url: URL Webhook Google Chat
+  
+  text_slack_url_help: "Tạo một URL \"Incoming WebHook\" từ <a href=\"https://slack.com/apps/build/custom-integration\">trang cấu hình ứng dụng trên Slack</a>. URL này có thể được thay đổi cho từng dự án bằng cách tạo một <a href=\"%{url}\">trường tùy chỉnh của dự án</a> có tên \"Slack URL\" (không có dấu ngoặc kép)."
+  text_slack_channel_help: "Kênh có thể được thay đổi cho từng dự án bằng cách tạo một <a href=\"%{url}\">trường tùy chỉnh của dự án</a> có tên \"Slack Channel\" (không có dấu ngoặc kép). <strong>Đối với các kênh công khai, giá trị này phải bắt đầu bằng ký tự <em>#</em>.</strong>"
+  text_google_chat_webhook_url_help: "Lấy một URL \"Incoming WebHook\" từ cấu hình không gian Google Chat của bạn. URL này có thể được ghi đè cho từng dự án bằng cách tạo một <a href=\"%{url}\">trường tùy chỉnh của dự án</a> có tên \"Google Chat Webhook\" (không có dấu ngoặc kép)."
+  
+  label_google_chat_settings: Cài đặt Google Chat
+  label_yes: Có
+  label_no: Không

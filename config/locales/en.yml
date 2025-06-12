@@ -1,0 +1,86 @@
+# English translations for Redmine Reminder plugin
+en:
+  # Plugin name and description
+  permission_view_reminders: View reminders
+  permission_manage_reminders: Manage reminders
+  project_module_reminder: Reminders
+  label_reminder_plural: Reminders
+  label_reminder_new: New reminder
+  label_reminder_edit: Edit reminder
+  
+  # Fields
+  field_content: Content
+  field_send_date: Send date
+  field_send_time: Send time
+  field_issue: Related issue
+  field_is_recurring: Repeat reminder
+  field_recurring_type: Repeat type
+  field_custom_days: Days of week
+  field_active: Active
+  
+  # Form helpers & placeholders
+  text_markdown_formatting_supported: Markdown formatting supported
+  label_select_issue_placeholder: -- Select an issue --
+  label_no_issues_in_project: No issues in this project
+  label_select_recurring_type_placeholder: -- Select type --
+  
+  # Recurring Types
+  recurring_type_daily: Daily
+  recurring_type_weekdays: Weekdays
+  recurring_type_weekly: Weekly
+  recurring_type_custom: Custom
+  
+  # Weekdays
+  weekday_monday: Monday
+  weekday_tuesday: Tuesday
+  weekday_wednesday: Wednesday
+  weekday_thursday: Thursday
+  weekday_friday: Friday
+  weekday_saturday: Saturday
+  weekday_sunday: Sunday
+
+  # Buttons and links
+  button_create_reminder: Create Reminder
+  button_update_reminder: Update Reminder
+  
+  # Index page
+  label_my_reminders: My Reminders
+  label_all_reminders: All Reminders (for admins)
+  label_status: Status
+  label_status_active: Active
+  label_status_inactive: Inactive
+  label_next_send_date: Next send
+  label_actions: Actions
+  
+  # Show page
+  label_reminder_details: Reminder Details
+  label_created_by: Created by
+  label_recurring_settings: Recurring Settings
+  label_not_recurring: Not recurring
+  
+  # Flash messages
+  notice_reminder_created_successfully: Reminder was successfully created.
+  notice_reminder_updated_successfully: Reminder was successfully updated.
+  notice_reminder_deleted_successfully: Reminder was successfully deleted.
+  
+  # Validation errors
+  error_custom_days_blank: cannot be blank for custom recurring type
+  error_custom_days_invalid: contains invalid days
+  
+  # Settings
+  setting_slack_url: Slack URL
+  setting_slack_channel: Slack Channel
+  setting_slack_icon: Slack Icon
+  setting_slack_username: Slack Username
+  setting_display_watchers: Display Watchers?
+  setting_post_updates: Post Issue Updates?
+  setting_post_wiki_updates: Post Wiki Updates?
+  setting_google_chat_webhook_url: Google Chat Webhook URL
+  
+  text_slack_url_help: "Generate an \"Incoming WebHook\" URL from the <a href=\"https://slack.com/apps/build/custom-integration\">apps configuration page on Slack</a>. This URL can be changed on a per-project basis by creating a <a href=\"%{url}\">project custom field</a> named \"Slack URL\" (without quotes)."
+  text_slack_channel_help: "The channel can be changed on a per-project basis by creating a <a href=\"%{url}\">project custom field</a> named \"Slack Channel\" (without quotes). <strong>For public channels, this value should start with a <em>#</em>.</strong>"
+  text_google_chat_webhook_url_help: "Get an \"Incoming WebHook\" URL from your Google Chat space configuration. This URL can be overridden on a per-project basis by creating a <a href=\"%{url}\">project custom field</a> named \"Google Chat Webhook\" (without quotes)."
+  
+  label_google_chat_settings: Google Chat Settings
+  label_yes: Yes
+  label_no: No

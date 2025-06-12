@@ -13,22 +13,17 @@ class Reminder < ActiveRecord::Base
   scope :for_today, -> { where(send_date: Date.current) }
   scope :for_time, ->(time) { where(send_time: time) }
 
-  RECURRING_TYPES = {
-    'daily' => 'Hàng ngày',
-    'weekdays' => 'Mỗi ngày làm việc',
-    'weekly' => 'Hàng tuần',
-    'custom' => 'Tuỳ chỉnh'
-  }.freeze
+  def self.recurring_type_options
+    %w[daily weekdays weekly custom].map do |type|
+      [I18n.t("recurring_type_#{type}"), type]
+    end
+  end
 
-  WEEKDAYS = {
-    '1' => 'Thứ 2',
-    '2' => 'Thứ 3', 
-    '3' => 'Thứ 4',
-    '4' => 'Thứ 5',
-    '5' => 'Thứ 6',
-    '6' => 'Thứ 7',
-    '0' => 'Chủ nhật'
-  }.freeze
+  def self.weekday_options
+    %w[monday tuesday wednesday thursday friday saturday sunday].map.with_index do |day, index|
+      [I18n.t("weekday_#{day}"), (index + 1) % 7]
+    end
+  end
 
   def formatted_send_time(timezone = nil)
     tz = timezone || get_user_timezone
@@ -40,14 +35,16 @@ class Reminder < ActiveRecord::Base
   end
 
   def recurring_type_text
-    RECURRING_TYPES[recurring_type] || 'Không lặp lại'
+    return I18n.t('label_not_recurring') if recurring_type.blank?
+    I18n.t("recurring_type_#{recurring_type}")
   end
 
   def custom_days_text
     return '' unless recurring_type == 'custom' && custom_days.present?
     
+    weekday_map = Hash[Reminder.weekday_options.map { |label, value| [value.to_s, label] }]
     days = custom_days.split(',').map(&:strip)
-    days.map { |day| WEEKDAYS[day] }.compact.join(', ')
+    days.map { |day| weekday_map[day] }.compact.join(', ')
   end
 
   def should_send_today?(timezone = nil)
@@ -162,15 +159,16 @@ class Reminder < ActiveRecord::Base
     return unless recurring_type == 'custom'
     
     if custom_days.blank?
-      errors.add(:custom_days, 'không được để trống khi chọn lặp lại tuỳ chỉnh')
+      errors.add(:custom_days, I18n.t('error_custom_days_blank'))
       return
     end
 
+    valid_days = Reminder.weekday_options.map { |_, value| value.to_s }
     days = custom_days.split(',').map(&:strip)
-    invalid_days = days.reject { |day| WEEKDAYS.key?(day) }
+    invalid_days = days.reject { |day| valid_days.include?(day) }
     
     if invalid_days.any?
-      errors.add(:custom_days, "chứa ngày không hợp lệ: #{invalid_days.join(', ')}")
+      errors.add(:custom_days, "#{I18n.t('error_custom_days_invalid')}: #{invalid_days.join(', ')}")
     end
   end
 end 

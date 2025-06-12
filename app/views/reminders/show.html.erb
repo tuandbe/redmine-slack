@@ -1,50 +1,49 @@
-<h2>Chi tiết Reminder</h2>
+<h2><%= l(:label_reminder_details) %> #<%= @reminder.id %></h2>
 
 <div class="contextual">
-  <%= link_to 'Sửa', edit_project_reminder_path(@project, @reminder),
+  <%= link_to l(:button_edit), edit_project_reminder_path(@project, @reminder),
               :class => 'icon icon-edit' %>
-  <%= link_to 'Xóa', project_reminder_path(@project, @reminder),
+  <%= link_to l(:button_delete), project_reminder_path(@project, @reminder),
               :method => :delete,
-              :data => {:confirm => 'Bạn có chắc muốn xóa reminder này?'},
+              :data => {:confirm => l(:text_are_you_sure)},
               :class => 'icon icon-del' %>
 </div>
 
 <div class="box tabular">
   <p>
-    <label>Nội dung:</label>
+    <label><%= l(:field_content) %>:</label>
     <div class="wiki">
       <%= textilizable @reminder.content %>
     </div>
   </p>
 
   <p>
-    <label>Ngày gửi:</label>
+    <label><%= l(:field_send_date) %>:</label>
     <%= @reminder.formatted_send_date %>
   </p>
 
   <p>
-    <label>Giờ gửi:</label>
+    <label><%= l(:field_send_time) %>:</label>
     <%= @reminder.formatted_send_time %>
   </p>
 
   <p>
-    <label>Lặp lại:</label>
-    <%= @reminder.recurring_type_text %>
-    <% if @reminder.recurring_type == 'custom' %>
-      <br><small>Các ngày: <%= @reminder.custom_days_text %></small>
+    <label><%= l(:field_issue) %>:</label>
+    <%= @reminder.issue ? link_to("##{@reminder.issue.id} #{@reminder.issue.subject}", 
+                issue_path(@reminder.issue)) : l(:label_none) %>
+  </p>
+
+  <p>
+    <label><%= l(:label_status) %>:</label>
+    <% if @reminder.active? %>
+      <span class="status-active"><%= l(:label_status_active) %></span>
+    <% else %>
+      <span class="status-inactive"><%= l(:label_status_inactive) %></span>
     <% end %>
   </p>
 
-  <% if @reminder.issue %>
   <p>
-    <label>Issue liên quan:</label>
-    <%= link_to "##{@reminder.issue.id} #{@reminder.issue.subject}", 
-                issue_path(@reminder.issue) %>
-  </p>
-  <% end %>
-
-  <p>
-    <label>Người tạo:</label>
+    <label><%= l(:label_created_by) %>:</label>
     <%= link_to_user @reminder.created_by %>
   </p>
 
@@ -60,23 +59,18 @@
   </p>
   <% end %>
 
-  <p>
-    <label>Trạng thái:</label>
-    <% if @reminder.active? %>
-      <span class="status-active">Hoạt động</span>
-    <% else %>
-      <span class="status-inactive">Tạm dừng</span>
-    <% end %>
-  </p>
-
   <% if @reminder.is_recurring? && @reminder.active? %>
   <p>
-    <label>Lần gửi tiếp theo:</label>
+    <label><%= l(:label_recurring_settings) %>:</label>
     <% next_date = @reminder.next_send_date %>
     <% if next_date %>
-      <%= next_date.strftime('%d/%m/%Y') %> lúc <%= @reminder.formatted_send_time %>
+      <%= @reminder.recurring_type_text %>
+      <% if @reminder.recurring_type == 'custom' %>
+        (<%= @reminder.custom_days_text %>)
+      <% end %>
+      <br><em>(<%= l(:label_next_send_date) %>: <%= next_date.strftime('%d/%m/%Y') %>)</em>
     <% else %>
-      <em>Không xác định được</em>
+      <%= l(:label_not_recurring) %>
     <% end %>
   </p>
   <% end %>

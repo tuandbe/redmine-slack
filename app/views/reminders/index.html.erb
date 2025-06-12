@@ -1,75 +1,47 @@
-<h2>Quản lý Reminder</h2>
-
 <div class="contextual">
-  <%= link_to 'Tạo Reminder mới', new_project_reminder_path(@project), 
-              :class => 'icon icon-add' %>
+  <%= link_to l(:label_reminder_new), new_project_reminder_path(@project), class: 'icon icon-add' %>
 </div>
 
+<h2><%= l(:label_reminder_plural) %></h2>
+
 <% if @reminders.any? %>
-<table class="list reminders">
-  <thead>
-    <tr>
-      <th>Nội dung</th>
-      <th>Ngày gửi</th>
-      <th>Giờ gửi</th>
-      <th>Lặp lại</th>
-      <th>Issue liên quan</th>
-      <th>Người tạo</th>
-      <th>Trạng thái</th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-    <% @reminders.each do |reminder| %>
-    <tr class="<%= cycle('odd', 'even') %>">
-      <td class="subject">
-        <%= link_to truncate(reminder.content, length: 50), 
-                    project_reminder_path(@project, reminder) %>
-      </td>
-      <td class="date">
-        <%= reminder.formatted_send_date %>
-      </td>
-      <td class="time">
-        <%= reminder.formatted_send_time %>
-      </td>
-      <td class="recurring">
-        <%= reminder.recurring_type_text %>
-        <% if reminder.recurring_type == 'custom' %>
-          <br><small>(<%= reminder.custom_days_text %>)</small>
+  <div class="autoscroll">
+    <table class="list">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th><%= l(:field_content) %></th>
+          <th><%= l(:field_issue) %></th>
+          <th><%= l(:field_send_time) %></th>
+          <th><%= l(:label_recurring_settings) %></th>
+          <th><%= l(:label_next_send_date) %></th>
+          <th><%= l(:label_status) %></th>
+          <th><%= l(:label_created_by) %></th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @reminders.each do |reminder| %>
+          <tr class="reminder <%= cycle('odd', 'even') %>">
+            <td class="id"><%= link_to reminder.id, project_reminder_path(@project, reminder) %></td>
+            <td class="content"><%= reminder.content %></td>
+            <td class="issue"><%= reminder.issue ? link_to(reminder.issue, issue_path(reminder.issue)) : '' %></td>
+            <td class="time"><%= reminder.formatted_send_time %></td>
+            <td class="recurring"><%= reminder.recurring_type_text %></td>
+            <td class="next-date"><%= reminder.is_recurring? ? format_date(reminder.next_send_date) : '' %></td>
+            <td class="status"><%= reminder.active? ? l(:label_status_active) : l(:label_status_inactive) %></td>
+            <td class="author"><%= reminder.created_by.name %></td>
+            <td class="buttons">
+              <%= link_to l(:button_edit), edit_project_reminder_path(@project, reminder), class: 'icon icon-edit' %>
+              <%= link_to l(:button_delete), project_reminder_path(@project, reminder), method: :delete, data: { confirm: l(:text_are_you_sure) }, class: 'icon icon-del' %>
+            </td>
+          </tr>
         <% end %>
-      </td>
-      <td class="issue">
-        <% if reminder.issue %>
-          <%= link_to "##{reminder.issue.id} #{reminder.issue.subject}", 
-                      issue_path(reminder.issue) %>
-        <% else %>
-          <em>Không có</em>
-        <% end %>
-      </td>
-      <td class="author">
-        <%= link_to_user reminder.created_by %>
-      </td>
-      <td class="status">
-        <% if reminder.active? %>
-          <span class="status-active">Hoạt động</span>
-        <% else %>
-          <span class="status-inactive">Tạm dừng</span>
-        <% end %>
-      </td>
-      <td class="buttons">
-        <%= link_to 'Sửa', edit_project_reminder_path(@project, reminder),
-                    :class => 'icon icon-edit' %>
-        <%= link_to 'Xóa', project_reminder_path(@project, reminder),
-                    :method => :delete,
-                    :data => {:confirm => 'Bạn có chắc muốn xóa reminder này?'},
-                    :class => 'icon icon-del' %>
-      </td>
-    </tr>
-    <% end %>
-  </tbody>
-</table>
+      </tbody>
+    </table>
+  </div>
 <% else %>
-<p class="nodata">Chưa có reminder nào được tạo.</p>
+  <p class="nodata"><%= l(:label_no_data) %></p>
 <% end %>
 
 <%= content_for :header_tags do %>

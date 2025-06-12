@@ -1,62 +1,61 @@
 <p>
-	<label for="settings_slack_url">Slack URL</label>
+	<label for="settings_slack_url"><%= l(:setting_slack_url) %></label>
 	<input type="text" id="settings_slack_url" size=80 value="<%= settings['slack_url'] %>" name="settings[slack_url]" />
 </p>
 
 <p>
-	Generate an "Incoming WebHook" URL from the <a href="https://slack.com/apps/build/custom-integration">apps configuration page on Slack</a>. This URL can be changed on a per-project basis by creating a <a href="/custom_fields/new?type=ProjectCustomField">project custom field</a> named "Slack URL" (without quotes).
+	<%= l(:text_slack_url_help, url: new_custom_field_path(type: 'ProjectCustomField')).html_safe %>
 </p>
 
 <p>
-	<label for="settings_channel">Slack Channel</label>
+	<label for="settings_channel"><%= l(:setting_slack_channel) %></label>
 	<input type="text" id="settings_channel" value="<%= settings['channel'] %>" name="settings[channel]" />
 </p>
 
 <p>
-	The channel can be changed on a per-project basis by creating a
-	<a href="/custom_fields/new?type=ProjectCustomField">project custom field</a> named "Slack Channel" (without quotes). <strong>For public channels, this value should start with a <em>#</em>.</strong>
+	<%= l(:text_slack_channel_help, url: new_custom_field_path(type: 'ProjectCustomField')).html_safe %>
 </p>
 
 <p>
-	<label for="settings_username">Slack Icon</label>
+	<label for="settings_icon"><%= l(:setting_slack_icon) %></label>
 	<input type="text" id="settings_icon" value="<%= settings['icon'] %>" name="settings[icon]" />
 </p>
 
 <p>
-	<label for="settings_username">Slack Username</label>
+	<label for="settings_username"><%= l(:setting_slack_username) %></label>
 	<input type="text" id="settings_username" value="<%= settings['username'] %>" name="settings[username]" />
 </p>
 
 <p>
-	<label for="settings_display_watchers">Display Watchers?</label>
-	<select id="settings_display_watchers" value="<%= settings['display_watchers'] %>" name="settings[display_watchers]">
-		<option value="yes">Yes</option>
-		<option value="no" <%= settings['display_watchers'] != 'yes' ? %q(selected="selected") : '' %>>No</option>
+	<label for="settings_display_watchers"><%= l(:setting_display_watchers) %></label>
+	<select id="settings_display_watchers" name="settings[display_watchers]">
+		<option value="yes" <%= 'selected' if settings['display_watchers'] == 'yes' %>><%= l(:label_yes) %></option>
+		<option value="no" <%= 'selected' if settings['display_watchers'] != 'yes' %>><%= l(:label_no) %></option>
 	</select>
 </p>
 
 <p>
-	<label for="settings_post_updates">Post Issue Updates?</label>
-	<input type="checkbox" id="settings_post_updates" value="1" name="settings[post_updates]" <%= settings['post_updates'] == '1' ? 'checked="checked"' : '' %> />
+	<label for="settings_post_updates"><%= l(:setting_post_updates) %></label>
+	<input type="checkbox" id="settings_post_updates" value="1" name="settings[post_updates]" <%= 'checked' if settings['post_updates'] == '1' %> />
 </p>
 
 <p>
-	<label for="settings_post_wiki_updates">Post Wiki Updates?</label>
-	<input type="checkbox" id="settings_post_wiki_updates" value="1" name="settings[post_wiki_updates]" <%= settings['post_wiki_updates'] == '1' ? 'checked="checked"' : '' %> />
+	<label for="settings_post_wiki_updates"><%= l(:setting_post_wiki_updates) %></label>
+	<input type="checkbox" id="settings_post_wiki_updates" value="1" name="settings[post_wiki_updates]" <%= 'checked' if settings['post_wiki_updates'] == '1' %> />
 </p>
 
 <hr />
 
 <fieldset>
-<legend>Google Chat Settings</legend>
+<legend><%= l(:label_google_chat_settings) %></legend>
 
 <p>
-	<label for="settings_google_chat_webhook_url">Google Chat Webhook URL</label>
+	<label for="settings_google_chat_webhook_url"><%= l(:setting_google_chat_webhook_url) %></label>
 	<input type="text" id="settings_google_chat_webhook_url" size=80 value="<%= settings['google_chat_webhook_url'] %>" name="settings[google_chat_webhook_url]" />
 </p>
 
 <p>
-	Get an "Incoming WebHook" URL from your Google Chat space configuration. This URL can be overridden on a per-project basis by creating a <a href="/custom_fields/new?type=ProjectCustomField">project custom field</a> named "Google Chat Webhook" (without quotes).
+	<%= l(:text_google_chat_webhook_url_help, url: new_custom_field_path(type: 'ProjectCustomField')).html_safe %>
 </p>
 
 </fieldset>

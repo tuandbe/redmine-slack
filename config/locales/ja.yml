@@ -1,0 +1,76 @@
+# Japanese translations for Redmine Reminder plugin
+ja:
+  permission_view_reminders: リマインダーの表示
+  permission_manage_reminders: リマインダーの管理
+  project_module_reminder: リマインダー
+  label_reminder_plural: リマインダー
+  label_reminder_new: 新規リマインダー
+  label_reminder_edit: リマインダーの編集
+  
+  field_content: 内容
+  field_send_date: 送信日
+  field_send_time: 送信時間
+  field_issue: 関連チケット
+  field_is_recurring: リマインダーを繰り返す
+  field_recurring_type: 繰り返し種別
+  field_custom_days: 曜日
+  field_active: 有効
+  
+  text_markdown_formatting_supported: Markdown形式をサポート
+  label_select_issue_placeholder: -- チケットを選択 --
+  label_no_issues_in_project: このプロジェクトにはチケットがありません
+  label_select_recurring_type_placeholder: -- 種別を選択 --
+  
+  recurring_type_daily: 毎日
+  recurring_type_weekdays: 平日
+  recurring_type_weekly: 毎週
+  recurring_type_custom: カスタム
+  
+  weekday_monday: 月曜日
+  weekday_tuesday: 火曜日
+  weekday_wednesday: 水曜日
+  weekday_thursday: 木曜日
+  weekday_friday: 金曜日
+  weekday_saturday: 土曜日
+  weekday_sunday: 日曜日
+  
+  button_create_reminder: リマインダー作成
+  button_update_reminder: リマインダー更新
+  
+  label_my_reminders: マイリマインダー
+  label_all_reminders: 全リマインダー（管理者向け）
+  label_status: ステータス
+  label_status_active: 有効
+  label_status_inactive: 無効
+  label_next_send_date: 次回送信
+  label_actions: 操作
+  
+  label_reminder_details: リマインダー詳細
+  label_created_by: 作成者
+  label_recurring_settings: 繰り返し設定
+  label_not_recurring: 繰り返しなし
+  
+  notice_reminder_created_successfully: リマインダーが正常に作成されました。
+  notice_reminder_updated_successfully: リマインダーが正常に更新されました。
+  notice_reminder_deleted_successfully: リマインダーが正常に削除されました。
+  
+  error_custom_days_blank: カスタム繰り返しタイプでは空にできません
+  error_custom_days_invalid: 無効な曜日が含まれています
+  
+  # Settings
+  setting_slack_url: Slack URL
+  setting_slack_channel: Slackチャンネル
+  setting_slack_icon: Slackアイコン
+  setting_slack_username: Slackユーザー名
+  setting_display_watchers: ウォッチャーを表示しますか？
+  setting_post_updates: チケットの更新を投稿しますか？
+  setting_post_wiki_updates: Wikiの更新を投稿しますか？
+  setting_google_chat_webhook_url: Google Chat Webhook URL
+  
+  text_slack_url_help: "Slackの<a href=\"https://slack.com/apps/build/custom-integration\">アプリ設定ページ</a>から「Incoming WebHook」URLを生成します。このURLは、「Slack URL」という名前の<a href=\"%{url}\">プロジェクトのカスタムフィールド</a>を作成することで、プロジェクトごとに変更できます（引用符なし）。"
+  text_slack_channel_help: "チャンネルは、「Slack Channel」という名前の<a href=\"%{url}\">プロジェクトのカスタムフィールド</a>を作成することで、プロジェクトごとに変更できます（引用符なし）。<strong>公開チャンネルの場合、この値は<em>#</em>で始める必要があります。</strong>"
+  text_google_chat_webhook_url_help: "Google Chatスペースの設定から「Incoming WebHook」URLを取得します。このURLは、「Google Chat Webhook」という名前の<a href=\"%{url}\">プロジェクトのカスタムフィールド</a>を作成することで、プロジェクトごとに上書きできます（引用符なし）。"
+  
+  label_google_chat_settings: Googleチャット設定
+  label_yes: はい
+  label_no: いいえ
