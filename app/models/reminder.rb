@@ -114,8 +114,11 @@ class Reminder < ActiveRecord::Base
   private
 
   def get_user_timezone
+    # Determine the user: current user for new reminders, creator for existing ones.
+    user = new_record? ? User.current : created_by
+
     # Get user's timezone from preferences
-    user_tz = created_by.preference&.time_zone
+    user_tz = user&.preference&.time_zone
     
     # Check if user has a valid timezone set (not nil, not empty string)
     if user_tz.present? && user_tz.strip != ""
