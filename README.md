@@ -1,50 +1,119 @@
-# Reminder plugin for Redmine (Slack & Google Chat)
+# Redmine Reminder Plugin (with Google Chat & Slack support)
 
-This plugin posts updates to issues and wiki pages in your Redmine installation to a Slack channel and/or a Google Chat space. This is a fork of the original `redmine-slack` plugin, extended to add Google Chat support.
+This plugin enhances Redmine by adding a powerful reminder feature. It allows users to create scheduled and recurring reminders for projects, which are then sent as notifications to specified Google Chat spaces or Slack channels.
 
-Improvements are welcome! Just send a pull request.
+This plugin is based on the original `redmine-slack` plugin and has been extended to include robust support for Google Chat and a dedicated reminder management system.
 
-## Screenshot
+## Features
 
-![screenshot](https://raw.github.com/sciyoshi/redmine-slack/gh-pages/screenshot.png)
-*(Note: Screenshot from original Slack-only version)*
+-   Create reminders for specific projects.
+-   Schedule reminders for a specific date and time.
+-   Set up recurring reminders (daily, weekdays, weekly, custom days).
+-   Link reminders to specific Redmine issues.
+-   Send notifications to Google Chat and/or Slack.
+-   Per-project notification settings.
+-   Multi-language support (English, Vietnamese, Japanese).
 
 ## Installation
 
-1.  From your Redmine plugins directory, clone this repository as `redmine_reminder`:
-
-    ```
+1.  **Clone the Plugin**
+    From your Redmine `plugins` directory, clone this repository:
+    ```bash
     git clone <your-repository-url> redmine_reminder
     ```
 
-2.  You will also need the `httpclient` dependency, which can be installed by running `bundle install` from the Redmine root directory.
+2.  **Install Dependencies**
+    Ensure you have the `httpclient` gem. From your Redmine root directory, run:
+    ```bash
+    bundle install
+    ```
 
-3.  Restart Redmine. You should see the plugin show up in `Administration > Plugins` as "Redmine Reminder". Click `Configure` to set it up.
+3.  **Run Migrations**
+    Run the database migration to create the necessary tables for the reminders:
+    ```bash
+    bundle exec rake redmine:plugins:migrate RAILS_ENV=production
+    ```
+
+4.  **Restart Redmine**
+    Restart your Redmine application server (e.g., Puma, Unicorn, Passenger) for the changes to take effect. You should see "Redmine Reminder" in `Administration > Plugins`.
 
 ## Configuration
 
-You can configure notifications globally and then override them on a per-project basis.
+### 1. Set up Custom Fields for Notifications
 
-### Global Configuration
+To tell the plugin where to send notifications for each project, you must create a Project Custom Field.
 
-Go to `Administration > Plugins > Redmine Reminder > Configure`.
+-   Navigate to `Administration > Custom fields`.
+-   Click `New custom field` and select **Projects**.
+-   Create the following field:
+    -   **Name**: `Google Chat Webhook`
+    -   **Format**: Long text
+    -   **For all projects**: Check this box.
+    *You can do the same for Slack by creating `Slack URL` and `Slack Channel` custom fields if needed.*
 
-*   **Slack:**
-    *   `Slack URL`: Your main Incoming WebHook URL from Slack.
-    *   `Slack Channel`: The default channel to post to (e.g., `#general`).
-*   **Google Chat:**
-    *   `Google Chat Webhook URL`: Your main Incoming WebHook URL from your Google Chat space.
+### 2. Configure Webhook URL in Project Settings
 
-### Per-Project Configuration
+-   Go to a project's `Settings` tab.
+-   In the "Custom fields" section, paste the **Incoming Webhook URL** for your Google Chat space into the `Google Chat Webhook` field.
 
-You can route messages to different channels or spaces for each project. To do this, create Project Custom Fields (`Administration > Custom fields > New custom field > Project`).
+### 3. Set Up Cron Job for Sending Reminders
 
-*   **For Slack:**
-    *   Create a custom field named `Slack Channel`. For a project, you can enter a different channel name (e.g., `#project-alpha`). To disable Slack notifications for a project, set this field's value to `-`.
-    *   Create a custom field named `Slack URL` to use a different Slack workspace for a specific project.
-*   **For Google Chat:**
-    *   Create a custom field named `Google Chat Webhook`. For a project, you can enter a different space's webhook URL here.
+The plugin relies on a Rake task to check for and send due reminders. You need to set up a cron job to run this task periodically (e.g., every minute).
 
-If no custom field is set for a project, the plugin will check its parent project, and if not found, it will use the global settings.
+-   Create a Rake task file if it doesn't exist, or simply use the command directly.
+-   Open your crontab for editing:
+    ```bash
+    crontab -e
+    ```
+-   Add the following line, making sure to replace `/path/to/redmine` with the absolute path to your Redmine installation:
+    ```bash
+    * * * * * cd /path/to/redmine && bundle exec rake redmine_reminder:send_reminders RAILS_ENV=production >> log/cron.log 2>&1
+    ```
+    This command runs the task every minute and logs its output to `log/cron.log`.
 
-For more information on Redmine plugins, see http://www.redmine.org/projects/redmine/wiki/Plugins.
+## Usage
+
+Once configured, a "Reminders" tab will appear in the project menu.
+
+-   Click the tab to view, create, edit, and delete reminders.
+-   When creating a reminder, you can set its content, schedule, and recurrence rules.
+-   The content field supports Google Chat's formatting syntax.
+
+### Google Chat Message Formatting
+
+When writing a reminder's content, you can use the following syntax for formatting in Google Chat:
+
+-   `*bold text*` for **bold**
+-   `_italic text_` for _italics_
+-   `~strikethrough text~` for ~strikethrough~
+-   `<https://example.com|Link Text>` for hyperlinks.
+-   `<users/all>` to mention everyone in the space.
+-   `<users/user@example.com>` to mention a specific person.
+
+## Rake Tasks for Maintenance
+
+The plugin provides several Rake tasks for administrative purposes. Run them from your Redmine root directory.
+
+-   **Send due reminders (the main task for cron):**
+    ```bash
+    bundle exec rake redmine_reminder:send_reminders RAILS_ENV=production
+    ```
+
+-   **Test the webhook for a specific project:**
+    ```bash
+    bundle exec rake "redmine_reminder:test_webhook[PROJECT_ID]" RAILS_ENV=production
+    ```
+    Replace `PROJECT_ID` with the actual ID or identifier of the project.
+
+## Troubleshooting
+
+-   **Reminders not sending?**
+    1.  Check that the project has the `Google Chat Webhook` custom field correctly configured.
+    2.  Ensure the reminder is marked as "Active".
+    3.  Verify that your cron job is running correctly and there are no errors in `log/cron.log`.
+    4.  Run the `send_reminders` task manually and check the output in `log/production.log`.
+
+-   **Webhook Errors?**
+    1.  Double-check the webhook URL.
+    2.  Use the `test_webhook` task to see if Redmine can reach the URL.
+    3.  Ensure the bot has permission to post in the Google Chat space.
