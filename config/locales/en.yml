@@ -21,6 +21,7 @@ en:
   # Form helpers & placeholders
   text_markdown_formatting_supported: Markdown formatting supported
   label_select_issue_placeholder: -- Select an issue --
+  label_selected_issue: Selected issue
   label_no_issues_in_project: No issues in this project
   label_select_recurring_type_placeholder: -- Select type --
   
@@ -42,6 +43,7 @@ en:
   # Buttons and links
   button_create_reminder: Create Reminder
   button_update_reminder: Update Reminder
+  button_clear: Clear
   
   # Index page
   label_my_reminders: My Reminders

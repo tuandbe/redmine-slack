@@ -31,9 +31,21 @@
   <p>
     <%= f.label :issue_id, l(:field_issue) %>
     <% if @project.issues.any? %>
-      <%= f.collection_select :issue_id, @project.issues.order(:id), :id, 
-                             :to_s, { include_blank: l(:label_select_issue_placeholder) },
-                             { class: 'issue-select' } %>
+      <div class="issue-search-container">
+        <%= f.hidden_field :issue_id %>
+        <input type="text" id="issue-search-input" class="issue-search-input" 
+               placeholder="<%= l(:label_select_issue_placeholder) %>" 
+               data-search-url="<%= search_issues_project_reminders_path(@project) %>"
+               style="width: 250px; margin-bottom: 5px;"
+               <% if @reminder.issue %>value="#<%= @reminder.issue.id %>: <%= @reminder.issue.subject %>"<% end %> />
+        <div id="issue-search-results" class="issue-search-results" style="display: none; position: relative; z-index: 1000;"></div>
+        <% if @reminder.issue %>
+          <div class="current-issue" style="margin-top: 5px; font-size: 0.9em; color: #666;">
+            <strong><%= l(:label_selected_issue) %>:</strong> #<%= @reminder.issue.id %>: <%= @reminder.issue.subject %>
+            <a href="#" class="clear-issue" style="margin-left: 10px; color: #d00;">[<%= l(:button_clear) %>]</a>
+          </div>
+        <% end %>
+      </div>
     <% else %>
       <em><%= l(:label_no_issues_in_project) %></em>
     <% end %>

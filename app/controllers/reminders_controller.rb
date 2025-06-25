@@ -29,6 +29,9 @@ class RemindersController < ApplicationController
     @reminder = @project.reminders.build(reminder_params)
     @reminder.created_by = User.current
     
+    Rails.logger.debug "DEBUG: reminder_params = #{reminder_params.inspect}" # Debug log
+    Rails.logger.debug "DEBUG: issue_id = #{params[:reminder][:issue_id]}" # Debug log
+    
     # Fix timezone issue: convert send_time to UTC properly
     if params[:reminder][:send_time].present?
       user_tz = get_user_timezone(User.current)
@@ -43,9 +46,11 @@ class RemindersController < ApplicationController
     end
 
     if @reminder.save
+      Rails.logger.debug "DEBUG: reminder saved with issue_id = #{@reminder.issue_id}" # Debug log
       flash[:notice] = l(:notice_reminder_created_successfully)
       redirect_to project_reminders_path(@project)
     else
+      Rails.logger.debug "DEBUG: reminder save failed: #{@reminder.errors.full_messages}" # Debug log
       render :new
     end
   end
@@ -54,6 +59,9 @@ class RemindersController < ApplicationController
   end
 
   def update
+    Rails.logger.debug "DEBUG: update reminder_params = #{reminder_params.inspect}" # Debug log
+    Rails.logger.debug "DEBUG: update issue_id = #{params[:reminder][:issue_id]}" # Debug log
+    
     # Fix timezone issue: convert send_time to UTC properly  
     reminder_params_with_time = if params[:reminder][:send_time].present?
       user_tz = get_user_timezone(User.current)
@@ -70,9 +78,11 @@ class RemindersController < ApplicationController
     end
     
     if @reminder.update(reminder_params_with_time)
+      Rails.logger.debug "DEBUG: reminder updated with issue_id = #{@reminder.issue_id}" # Debug log
       flash[:notice] = l(:notice_reminder_updated_successfully)
       redirect_to project_reminders_path(@project)
     else
+      Rails.logger.debug "DEBUG: reminder update failed: #{@reminder.errors.full_messages}" # Debug log
       render :edit
     end
   end
@@ -81,6 +91,29 @@ class RemindersController < ApplicationController
     @reminder.destroy
     flash[:notice] = l(:notice_reminder_deleted_successfully)
     redirect_to project_reminders_path(@project)
+  end
+
+  def search_issues
+    term = params[:q]
+    selected_id = params[:id]
+
+    scope = @project.issues.order(updated_on: :desc)
+    
+    issues = if selected_id
+      scope.where(id: selected_id)
+    elsif term.present?
+      scope.where("LOWER(issues.subject) LIKE :term OR CONVERT(issues.id, CHAR) LIKE :term", term: "%#{term.downcase}%")
+    else
+      scope
+    end
+
+    issues = issues.limit(20)
+
+    results = issues.map do |issue|
+      { id: issue.id, text: "##{issue.id}: #{issue.subject}" }
+    end
+
+    render json: { results: results }
   end
 
   private

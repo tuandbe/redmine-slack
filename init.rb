@@ -26,7 +26,7 @@ Redmine::Plugin.register :redmine_reminder do
 
 	# Permissions for reminder functionality
 	project_module :reminders do
-		permission :view_reminders, { :reminders => [:index, :show] }
+		permission :view_reminders, { :reminders => [:index, :show, :search_issues] }
 		permission :manage_reminders, { :reminders => [:new, :create, :edit, :update, :destroy] }
 	end
 

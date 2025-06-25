@@ -18,6 +18,7 @@ vi:
   
   text_markdown_formatting_supported: Hỗ trợ định dạng Markdown
   label_select_issue_placeholder: -- Chọn một issue --
+  label_selected_issue: Issue đã chọn
   label_no_issues_in_project: Không có issue nào trong dự án này
   label_select_recurring_type_placeholder: -- Chọn loại --
   
@@ -36,6 +37,7 @@ vi:
   
   button_create_reminder: Tạo Nhắc nhở
   button_update_reminder: Cập nhật Nhắc nhở
+  button_clear: Xóa
   
   label_my_reminders: Nhắc nhở của tôi
   label_all_reminders: Tất cả nhắc nhở (cho quản trị)

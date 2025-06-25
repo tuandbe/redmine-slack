@@ -72,9 +72,18 @@ The plugin relies on a Rake task to check for and send due reminders. You need t
     This command runs the task every minute and logs its output to `log/cron.log`.
 
 -   Add the following line, making sure to replace `/path/to/redmine` with the absolute path to your Redmine installation:
+    
+    **Option 1: Simple daily log files**
     ```bash
-    * * * * * /bin/bash -l -c 'cd /opt/bitnami/redmine && bundle exec rake redmine_reminder:send_reminders RAILS_ENV=production >> log/cron.log 2>&1'
+    * * * * * /bin/bash -l -c 'cd /opt/bitnami/redmine && bundle exec rake redmine_reminder:send_reminders RAILS_ENV=production >> log/cron-$(date +\%Y\%m\%d).log 2>&1'
     ```
+    
+    **Option 2: Using wrapper script (with automatic cleanup)**
+    ```bash
+    * * * * * /opt/bitnami/redmine/plugins/redmine_reminder/bin/run_reminder_with_log.sh
+    ```
+    
+    This will create daily log files like `cron-20250619.log`, `cron-20250620.log`, etc.
 
 > **Note on cron environment:** The command is wrapped in `/bin/bash -l -c '...'` to ensure it runs in a login shell. This is crucial because cron jobs run with a minimal environment and often cannot find the `bundle` command. This wrapper loads your user's shell profile (like `.bash_profile` or `.profile`), which sets up the correct `PATH` for Ruby and Bundler.
 
